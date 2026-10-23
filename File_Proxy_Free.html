@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Proxy Miễn Phí - ProxyHub Style</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+    <!-- Header Nhận diện thương hiệu -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-600 text-white w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg shadow-md shadow-blue-600/20">
+                    P
+                </div>
+                <span class="text-xl font-bold tracking-tight text-slate-900">Proxy<span class="text-blue-600">Hub</span> <span class="text-xs font-normal px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full border border-blue-200">API Live</span></span>
+            </div>
+            <div class="text-sm text-slate-500 font-medium flex items-center">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2 animate-pulse"></span> Hệ thống hoạt động 24/7
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Tiêu đề & Nút chuyển nhanh -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+                    Danh sách proxy miễn phí đang hoạt động
+                </h1>
+                <p class="text-slate-500 mt-1 text-sm">
+                    Chọn phạm vi IP trước, sau đó lọc thêm theo giao thức và độ trễ[cite: 2].
+                </p>
+            </div>
+            <div class="inline-flex bg-slate-200/70 p-1.5 rounded-2xl border border-slate-300/60 self-start">
+                <button id="btn-global" onclick="switchScope('global')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-sm">
+                    Proxy quốc tế
+                </button>
+                <button id="btn-vn" onclick="switchScope('vn')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900">
+                    Proxy Việt Nam (VN)
+                </button>
+            </div>
+        </div>
+
+        <!-- Thanh công cụ & Bộ lọc -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+                <div class="relative flex-1 min-w-[280px]">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    </span>
+                    <input type="text" id="search-input" oninput="filterTableLocally()" placeholder="Tìm kiếm nhanh IP hoặc Port trong bảng..." class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl pl-10 pr-4 py-2.5 outline-none focus:border-blue-600 font-medium">
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="toggleSelectAll()" id="btn-select-all" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 text-xs font-bold px-3 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                        <i class="fa-regular fa-square-check"></i> Chọn tất cả
+                    </button>
+                    <button onclick="exportSelectedTxt()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-arrow-down"></i> Xuất TXT đã chọn
+                    </button>
+                    <button onclick="exportSelectedJson()" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Xuất JSON đã chọn
+                    </button>
+                    <button onclick="resetFilters()" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold px-3.5 py-2.5 rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> Đặt lại
+                    </button>
+                </div>
+            </div>
+
+            <!-- Các bộ lọc chi tiết - Đầy đủ 60+ quốc gia -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="relative">
+                    <label class="block text-xs font-bold text-slate-600 mb-1 tracking-wider">QUỐC GIA</label>
+                    <input type="hidden" id="country-filter" value="">
+                    
+                    <button onclick="toggleCountryDropdown()" type="button" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2.5 text-left flex items-center justify-between outline-none focus:border-blue-600 font-medium">
+                        <span id="selected-country-label" class="flex items-center gap-2 truncate">
+                            🌍 Tất cả quốc gia (All)
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                    </button>
+
+                    <!-- Trọn bộ hơn 60 quốc gia -->
+                    <div id="country-dropdown-menu" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 p-1 space-y-0.5">
+                        <div onclick="selectCountry('', 'Tất cả quốc gia (All)', '')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium">🌍 Tất cả quốc gia (All)</div>
+                        <div onclick="selectCountry('us', 'United States (US)', 'us')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/us.png" class="w-5 h-3.5 object-cover rounded border"> United States (US)</div>
+                        <div onclick="selectCountry('id', 'Indonesia (ID)', 'id')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/id.png" class="w-5 h-3.5 object-cover rounded border"> Indonesia (ID)</div>
+                        <div onclick="selectCountry('vn', 'Vietnam (VN)', 'vn')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/vn.png" class="w-5 h-3.5 object-cover rounded border"> Vietnam (VN)</div>
+                        <div onclick="selectCountry('nl', 'Netherlands (NL)', 'nl')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/nl.png" class="w-5 h-3.5 object-cover rounded border"> Netherlands (NL)</div>
+                        <div onclick="selectCountry('de', 'Germany (DE)', 'de')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/de.png" class="w-5 h-3.5 object-cover rounded border"> Germany (DE)</div>
+                        <div onclick="selectCountry('cn', 'China (CN)', 'cn')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/cn.png" class="w-5 h-3.5 object-cover rounded border"> China (CN)</div>
+                        <div onclick="selectCountry('ru', 'Russia (RU)', 'ru')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ru.png" class="w-5 h-3.5 object-cover rounded border"> Russia (RU)</div>
+                        <div onclick="selectCountry('br', 'Brazil (BR)', 'br')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/br.png" class="w-5 h-3.5 object-cover rounded border"> Brazil (BR)</div>
+                        <div onclick="selectCountry('in', 'India (IN)', 'in')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/in.png" class="w-5 h-3.5 object-cover rounded border"> India (IN)</div>
+                        <div onclick="selectCountry('mx', 'Mexico (MX)', 'mx')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/mx.png" class="w-5 h-3.5 object-cover rounded border"> Mexico (MX)</div>
+                        <div onclick="selectCountry('co', 'Colombia (CO)', 'co')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/co.png" class="w-5 h-3.5 object-cover rounded border"> Colombia (CO)</div>
+                        <div onclick="selectCountry('bd', 'Bangladesh (BD)', 'bd')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/bd.png" class="w-5 h-3.5 object-cover rounded border"> Bangladesh (BD)</div>
+                        <div onclick="selectCountry('sg', 'Singapore (SG)', 'sg')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/sg.png" class="w-5 h-3.5 object-cover rounded border"> Singapore (SG)</div>
+                        <div onclick="selectCountry('ec', 'Ecuador (EC)', 'ec')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ec.png" class="w-5 h-3.5 object-cover rounded border"> Ecuador (EC)</div>
+                        <div onclick="selectCountry('ar', 'Argentina (AR)', 'ar')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ar.png" class="w-5 h-3.5 object-cover rounded border"> Argentina (AR)</div>
+                        <div onclick="selectCountry('ph', 'Philippines (PH)', 'ph')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ph.png" class="w-5 h-3.5 object-cover rounded border"> Philippines (PH)</div>
+                        <div onclick="selectCountry('jp', 'Japan (JP)', 'jp')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/jp.png" class="w-5 h-3.5 object-cover rounded border"> Japan (JP)</div>
+                        <div onclick="selectCountry('za', 'South Africa (ZA)', 'za')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/za.png" class="w-5 h-3.5 object-cover rounded border"> South Africa (ZA)</div>
+                        <div onclick="selectCountry('th', 'Thailand (TH)', 'th')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/th.png" class="w-5 h-3.5 object-cover rounded border"> Thailand (TH)</div>
+                        <div onclick="selectCountry('pk', 'Pakistan (PK)', 'pk')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/pk.png" class="w-5 h-3.5 object-cover rounded border"> Pakistan (PK)</div>
+                        <div onclick="selectCountry('pl', 'Poland (PL)', 'pl')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/pl.png" class="w-5 h-3.5 object-cover rounded border"> Poland (PL)</div>
+                        <div onclick="selectCountry('fr', 'France (FR)', 'fr')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/fr.png" class="w-5 h-3.5 object-cover rounded border"> France (FR)</div>
+                        <div onclick="selectCountry('ve', 'Venezuela (VE)', 've')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ve.png" class="w-5 h-3.5 object-cover rounded border"> Venezuela (VE)</div>
+                        <div onclick="selectCountry('ua', 'Ukraine (UA)', 'ua')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ua.png" class="w-5 h-3.5 object-cover rounded border"> Ukraine (UA)</div>
+                        <div onclick="selectCountry('kh', 'Cambodia (KH)', 'kh')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/kh.png" class="w-5 h-3.5 object-cover rounded border"> Cambodia (KH)</div>
+                        <div onclick="selectCountry('kr', 'South Korea (KR)', 'kr')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/kr.png" class="w-5 h-3.5 object-cover rounded border"> South Korea (KR)</div>
+                        <div onclick="selectCountry('cm', 'Cameroon (CM)', 'cm')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/cm.png" class="w-5 h-3.5 object-cover rounded border"> Cameroon (CM)</div>
+                        <div onclick="selectCountry('hk', 'Hong Kong (HK)', 'hk')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/hk.png" class="w-5 h-3.5 object-cover rounded border"> Hong Kong (HK)</div>
+                        <div onclick="selectCountry('gb', 'United Kingdom (GB)', 'gb')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/gb.png" class="w-5 h-3.5 object-cover rounded border"> United Kingdom (GB)</div>
+                        <div onclick="selectCountry('bg', 'Bulgaria (BG)', 'bg')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/bg.png" class="w-5 h-3.5 object-cover rounded border"> Bulgaria (BG)</div>
+                        <div onclick="selectCountry('ca', 'Canada (CA)', 'ca')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ca.png" class="w-5 h-3.5 object-cover rounded border"> Canada (CA)</div>
+                        <div onclick="selectCountry('iq', 'Iraq (IQ)', 'iq')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/iq.png" class="w-5 h-3.5 object-cover rounded border"> Iraq (IQ)</div>
+                        <div onclick="selectCountry('ir', 'Iran (IR)', 'ir')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ir.png" class="w-5 h-3.5 object-cover rounded border"> Iran (IR)</div>
+                        <div onclick="selectCountry('cl', 'Chile (CL)', 'cl')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/cl.png" class="w-5 h-3.5 object-cover rounded border"> Chile (CL)</div>
+                        <div onclick="selectCountry('at', 'Austria (AT)', 'at')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/at.png" class="w-5 h-3.5 object-cover rounded border"> Austria (AT)</div>
+                        <div onclick="selectCountry('pe', 'Peru (PE)', 'pe')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/pe.png" class="w-5 h-3.5 object-cover rounded border"> Peru (PE)</div>
+                        <div onclick="selectCountry('au', 'Australia (AU)', 'au')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/au.png" class="w-5 h-3.5 object-cover rounded border"> Australia (AU)</div>
+                        <div onclick="selectCountry('do', 'Dominican Republic (DO)', 'do')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/do.png" class="w-5 h-3.5 object-cover rounded border"> Dominican Republic (DO)</div>
+                        <div onclick="selectCountry('tr', 'Turkey (TR)', 'tr')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/tr.png" class="w-5 h-3.5 object-cover rounded border"> Turkey (TR)</div>
+                        <div onclick="selectCountry('fi', 'Finland (FI)', 'fi')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/fi.png" class="w-5 h-3.5 object-cover rounded border"> Finland (FI)</div>
+                        <div onclick="selectCountry('my', 'Malaysia (MY)', 'my')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/my.png" class="w-5 h-3.5 object-cover rounded border"> Malaysia (MY)</div>
+                        <div onclick="selectCountry('ro', 'Romania (RO)', 'ro')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ro.png" class="w-5 h-3.5 object-cover rounded border"> Romania (RO)</div>
+                        <div onclick="selectCountry('rs', 'Serbia (RS)', 'rs')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/rs.png" class="w-5 h-3.5 object-cover rounded border"> Serbia (RS)</div>
+                        <div onclick="selectCountry('sy', 'Syria (SY)', 'sy')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/sy.png" class="w-5 h-3.5 object-cover rounded border"> Syria (SY)</div>
+                        <div onclick="selectCountry('np', 'Nepal (NP)', 'np')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/np.png" class="w-5 h-3.5 object-cover rounded border"> Nepal (NP)</div>
+                        <div onclick="selectCountry('ke', 'Kenya (KE)', 'ke')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ke.png" class="w-5 h-3.5 object-cover rounded border"> Kenya (KE)</div>
+                        <div onclick="selectCountry('es', 'Spain (ES)', 'es')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/es.png" class="w-5 h-3.5 object-cover rounded border"> Spain (ES)</div>
+                        <div onclick="selectCountry('kz', 'Kazakhstan (KZ)', 'kz')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/kz.png" class="w-5 h-3.5 object-cover rounded border"> Kazakhstan (KZ)</div>
+                        <div onclick="selectCountry('cz', 'Czechia (CZ)', 'cz')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/cz.png" class="w-5 h-3.5 object-cover rounded border"> Czechia (CZ)</div>
+                        <div onclick="selectCountry('am', 'Armenia (AM)', 'am')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/am.png" class="w-5 h-3.5 object-cover rounded border"> Armenia (AM)</div>
+                        <div onclick="selectCountry('il', 'Israel (IL)', 'il')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/il.png" class="w-5 h-3.5 object-cover rounded border"> Israel (IL)</div>
+                        <div onclick="selectCountry('al', 'Albania (AL)', 'al')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/al.png" class="w-5 h-3.5 object-cover rounded border"> Albania (AL)</div>
+                        <div onclick="selectCountry('se', 'Sweden (SE)', 'se')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/se.png" class="w-5 h-3.5 object-cover rounded border"> Sweden (SE)</div>
+                        <div onclick="selectCountry('dk', 'Denmark (DK)', 'dk')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/dk.png" class="w-5 h-3.5 object-cover rounded border"> Denmark (DK)</div>
+                        <div onclick="selectCountry('ae', 'United Arab Emirates (AE)', 'ae')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ae.png" class="w-5 h-3.5 object-cover rounded border"> United Arab Emirates (AE)</div>
+                        <div onclick="selectCountry('lt', 'Lithuania (LT)', 'lt')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/lt.png" class="w-5 h-3.5 object-cover rounded border"> Lithuania (LT)</div>
+                        <div onclick="selectCountry('uy', 'Uruguay (UY)', 'uy')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/uy.png" class="w-5 h-3.5 object-cover rounded border"> Uruguay (UY)</div>
+                        <div onclick="selectCountry('sk', 'Slovakia (SK)', 'sk')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/sk.png" class="w-5 h-3.5 object-cover rounded border"> Slovakia (SK)</div>
+                        <div onclick="selectCountry('ie', 'Ireland (IE)', 'ie')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/ie.png" class="w-5 h-3.5 object-cover rounded border"> Ireland (IE)</div>
+                        <div onclick="selectCountry('eg', 'Egypt (EG)', 'eg')" class="flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-100 rounded-lg cursor-pointer font-medium"><img src="https://flagcdn.com/24x18/eg.png" class="w-5 h-3.5 object-cover rounded border"> Egypt (EG)</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 tracking-wider">GIAO THỨC</label>
+                    <select id="protocol-filter" onchange="triggerApiLoad()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:border-blue-600 font-medium">
+                        <option value="">Tất cả giao thức</option>
+                        <option value="socks5">SOCKS5</option>
+                        <option value="socks4">SOCKS4</option>
+                        <option value="http">HTTP</option>
+                        <option value="https">HTTPS</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 tracking-wider">ĐỘ ẨN DANH</label>
+                    <select id="anonymity-filter" onchange="triggerApiLoad()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:border-blue-600 font-medium">
+                        <option value="">Tất cả cấp độ</option>
+                        <option value="elite">Elite (Ẩn danh cao)</option>
+                        <option value="anonymous">Anonymous</option>
+                        <option value="transparent">Transparent</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 tracking-wider">SẮP XẾP</label>
+                    <select id="sort-filter" onchange="triggerApiLoad()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:border-blue-600 font-medium">
+                        <option value="latency">Độ trễ thấp nhất (Latency)</option>
+                        <option value="score">Điểm số tốt nhất (Score)</option>
+                        <option value="uptime">Thời gian hoạt động (Uptime)</option>
+                        <option value="checked">Mới kiểm tra gần đây</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 tracking-wider">HIỂN THỊ / TRANG</label>
+                    <select id="pagesize-filter" onchange="triggerApiLoad()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-xl px-3 py-2.5 outline-none focus:border-blue-600 font-medium">
+                        <option value="25">25 dòng / trang</option>
+                        <option value="50" selected>50 dòng / trang</option>
+                        <option value="100">100 dòng / trang</option>
+                        <option value="200">200 dòng / trang (Max)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-600">
+                <span id="total-count"><i class="fa-solid fa-database mr-1 text-blue-600"></i> Đang tải dữ liệu...</span>
+                <span class="text-slate-400 font-normal">Bấm "Xem vị trí chi tiết" bên dưới quốc gia để tra cứu</span>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách Proxy -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs font-bold text-slate-500 bg-slate-50 uppercase tracking-wider">
+                            <th class="py-3.5 px-4 w-10 text-center">
+                                <input type="checkbox" id="header-checkbox" onchange="toggleSelectAllRows(this)" class="rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                            </th>
+                            <th class="py-3.5 px-4">IP Address</th>
+                            <th class="py-3.5 px-4">Port</th>
+                            <th class="py-3.5 px-4">Giao thức</th>
+                            <th class="py-3.5 px-4">Quốc gia / Vị trí</th>
+                            <th class="py-3.5 px-4">Độ ẩn danh</th>
+                            <th class="py-3.5 px-4">Độ trễ</th>
+                            <th class="py-3.5 px-4 cursor-pointer hover:text-blue-600 transition-colors" onclick="toggleUptimeSort()">
+                                Uptime <i id="uptime-sort-icon" class="fa-solid fa-sort ml-1"></i>
+                            </th>
+                            <th class="py-3.5 px-4 text-right">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="proxy-list" class="divide-y divide-slate-100 text-sm font-medium">
+                        <!-- Dữ liệu render bằng JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Phân trang -->
+        <div id="pagination-container" class="flex items-center justify-between bg-white border border-slate-200 rounded-2xl p-4 shadow-sm"></div>
+    </div>
+
+    <!-- Script Xử lý Logic -->
+    <script>
+        let currentPage = 1;
+        let currentLoadedData = [];
+        let uptimeSortDirection = 0;
+        let locationCache = {};
+
+        function toggleCountryDropdown() {
+            document.getElementById('country-dropdown-menu').classList.toggle('hidden');
+        }
+
+        function selectCountry(code, name, flagCode) {
+            document.getElementById('country-filter').value = code;
+            const label = document.getElementById('selected-country-label');
+            if (code === '') {
+                label.innerHTML = `🌍 ${name}`;
+            } else {
+                label.innerHTML = `<img src="https://flagcdn.com/24x18/${flagCode}.png" class="w-5 h-3.5 object-cover rounded border border-slate-200"> ${name}`;
+            }
+            document.getElementById('country-dropdown-menu').classList.add('hidden');
+            triggerApiLoad();
+        }
+
+        window.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('country-dropdown-menu');
+            const button = dropdown.previousElementSibling;
+            if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        function switchScope(scope) {
+            const btnGlobal = document.getElementById('btn-global');
+            const btnVn = document.getElementById('btn-vn');
+            if (scope === 'vn') {
+                btnVn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-sm";
+                btnGlobal.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
+                selectCountry('vn', 'Vietnam (VN)', 'vn');
+            } else {
+                btnGlobal.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-sm";
+                btnVn.className = "px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:text-slate-900";
+                selectCountry('', 'Tất cả quốc gia (All)');
+            }
+        }
+
+        function triggerApiLoad() {
+            currentPage = 1;
+            loadProxies(currentPage);
+        }
+
+        async function loadProxies(targetPage = 1) {
+            currentPage = targetPage;
+            const country = document.getElementById('country-filter').value;
+            const protocol = document.getElementById('protocol-filter').value;
+            const anonymity = document.getElementById('anonymity-filter').value;
+            const sort = document.getElementById('sort-filter').value;
+            const pageSize = document.getElementById('pagesize-filter').value;
+            
+            const tbody = document.getElementById('proxy-list');
+            const totalCount = document.getElementById('total-count');
+
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-slate-400 font-medium"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</td></tr>`;
+
+            let apiUrl = `https://proxmint.com/api/free-proxies?sort=${sort}&page=${currentPage}&pageSize=${pageSize}`;
+            if (country) apiUrl += `&country=${country}`;
+            if (protocol) apiUrl += `&protocol=${protocol}`;
+            if (anonymity) apiUrl += `&anonymity=${anonymity}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                currentLoadedData = data.rows || [];
+                totalCount.innerHTML = `<i class="fa-solid fa-database mr-1 text-blue-600"></i> Tổng số: <span class="text-blue-600 font-bold">${data.total || 0}</span> proxy`;
+
+                renderTable(currentLoadedData);
+                renderPagination(data.total, parseInt(pageSize));
+                document.getElementById('header-checkbox').checked = false;
+
+            } catch (error) {
+                console.error('Lỗi khi gọi API:', error);
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-rose-500 font-medium"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Không thể kết nối đến máy chủ API. Vui lòng thử lại sau.</td></tr>`;
+            }
+        }
+
+        // Hàm gọi API check vị trí khi người dùng bấm vào dòng chữ "Xem vị trí chi tiết"
+        async function fetchLocation(ip, index) {
+            const locElement = document.getElementById(`location-text-${index}`);
+            
+            if (locationCache[ip]) {
+                locElement.innerHTML = `${locationCache[ip].city}, ${locationCache[ip].org}`;
+                return;
+            }
+
+            locElement.innerHTML = `<span class="text-slate-400"><i class="fa-solid fa-spinner fa-spin text-xs mr-1"></i> Đang tra cứu...</span>`;
+
+            try {
+                const res = await fetch(`https://ipwho.is/${ip}`);
+                const geo = await res.json();
+                
+                if (geo.success) {
+                    const locInfo = {
+                        city: geo.city || 'Unknown City',
+                        org: (geo.connection && geo.connection.org) ? geo.connection.org : 'ISP Network'
+                    };
+                    locationCache[ip] = locInfo;
+                    locElement.innerHTML = `${locInfo.city}, ${locInfo.org}`;
+                } else {
+                    locElement.innerHTML = `<span class="text-rose-400">Không tìm thấy vị trí</span>`;
+                }
+            } catch (e) {
+                locElement.innerHTML = `<span class="text-rose-400">Lỗi kết nối</span>`;
+            }
+        }
+
+        function toggleUptimeSort() {
+            const icon = document.getElementById('uptime-sort-icon');
+            if (uptimeSortDirection === 0 || uptimeSortDirection === -1) {
+                uptimeSortDirection = 1;
+                icon.className = "fa-solid fa-sort-up ml-1 text-blue-600";
+                currentLoadedData.sort((a, b) => (a.uptimePct || 0) - (b.uptimePct || 0));
+            } else {
+                uptimeSortDirection = -1;
+                icon.className = "fa-solid fa-sort-down ml-1 text-blue-600";
+                currentLoadedData.sort((a, b) => (b.uptimePct || 0) - (a.uptimePct || 0));
+            }
+            renderTable(currentLoadedData);
+        }
+
+        function renderTable(rows) {
+            const tbody = document.getElementById('proxy-list');
+            tbody.innerHTML = '';
+
+            if (!rows || rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-10 text-slate-400">Không tìm thấy proxy phù hợp với bộ lọc hiện tại.</td></tr>`;
+                return;
+            }
+
+            rows.forEach((proxy, index) => {
+                const countryCode = proxy.countryCode ? proxy.countryCode.toLowerCase() : 'un';
+                const flagImgUrl = `https://flagcdn.com/24x18/${countryCode}.png`;
+                
+                let locationHtml = '';
+                if (locationCache[proxy.ip]) {
+                    locationHtml = `${locationCache[proxy.ip].city}, ${locationCache[proxy.ip].org}`;
+                } else {
+                    // Dạng text link bấm thủ công để tránh nghẽn mạng
+                    locationHtml = `<span onclick="fetchLocation('${proxy.ip}', ${index})" class="text-sky-600 hover:text-sky-700 hover:underline cursor-pointer font-normal text-xs transition-colors">Xem vị trí chi tiết</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center">
+                        <input type="checkbox" class="row-checkbox rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" data-index="${index}">
+                    </td>
+                    <td class="py-3 px-4 font-mono text-blue-600 font-semibold">${proxy.ip}</td>
+                    <td class="py-3 px-4 font-mono text-slate-700">${proxy.port}</td>
+                    <td class="py-3 px-4 uppercase"><span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-lg text-xs font-bold">${proxy.protocol}</span></td>
+                    <td class="py-3 px-4 flex items-start gap-2.5 text-slate-700">
+                        <img src="${flagImgUrl}" alt="${proxy.countryCode}" class="w-5 h-3.5 object-cover rounded shadow-sm border border-slate-200 mt-1" onerror="this.src='https://flagcdn.com/24x18/un.png'">
+                        <div>
+                            <div class="font-semibold text-slate-900">${proxy.countryName || 'N/A'}</div>
+                            <div id="location-text-${index}" class="text-xs text-sky-600 font-normal mt-0.5">${locationHtml}</div>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-600 capitalize text-xs font-bold">${proxy.anonymity || 'N/A'}</td>
+                    <td class="py-3 px-4 text-emerald-600 font-semibold">${proxy.latencyMs} ms</td>
+                    <td class="py-3 px-4 text-slate-600 font-bold">${proxy.uptimePct}%</td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="copyToClipboard('${proxy.ip}:${proxy.port}', this)" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl transition-all shadow-sm active:scale-95">
+                            <i class="fa-regular fa-copy mr-1"></i> Copy
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleSelectAllRows(masterCheckbox) {
+            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = masterCheckbox.checked);
+        }
+
+        function toggleSelectAll() {
+            const master = document.getElementById('header-checkbox');
+            master.checked = !master.checked;
+            toggleSelectAllRows(master);
+        }
+
+        function getSelectedProxies() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            let selected = [];
+            checkboxes.forEach(cb => {
+                const idx = cb.getAttribute('data-index');
+                if (currentLoadedData[idx]) selected.push(currentLoadedData[idx]);
+            });
+            return selected.length === 0 ? currentLoadedData : selected;
+        }
+
+        function exportSelectedTxt() {
+            const list = getSelectedProxies();
+            if (list.length === 0) return alert('Không có dữ liệu proxy để xuất!');
+            const text = list.map(p => `${p.ip}:${p.port}`).join('\n');
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `proxies_${Date.now()}.txt`;
+            anchor.click();
+            anchor.remove();
+        }
+
+        function exportSelectedJson() {
+            const list = getSelectedProxies();
+            if (list.length === 0) return alert('Không có dữ liệu proxy để xuất!');
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(list, null, 2));
+            const anchor = document.createElement('a');
+            anchor.href = dataStr;
+            anchor.download = `proxies_${Date.now()}.json`;
+            anchor.click();
+            anchor.remove();
+        }
+
+        function filterTableLocally() {
+            const keyword = document.getElementById('search-input').value.toLowerCase();
+            const filtered = currentLoadedData.filter(item => 
+                item.ip.toLowerCase().includes(keyword) || 
+                item.port.toString().includes(keyword)
+            );
+            renderTable(filtered);
+        }
+
+        function renderPagination(totalItems, pageSize) {
+            const totalPages = Math.ceil(totalItems / pageSize);
+            const container = document.getElementById('pagination-container');
+            if (totalPages <= 1) {
+                container.innerHTML = `<span class="text-xs text-slate-500 font-medium">Hiển thị toàn bộ ${totalItems} kết quả</span>`;
+                return;
+            }
+            container.innerHTML = `
+                <span class="text-xs font-medium text-slate-500">Trang <span class="font-bold text-slate-800">${currentPage}</span> / ${totalPages}</span>
+                <div class="flex gap-2">
+                    <button onclick="loadProxies(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="bg-slate-100 text-slate-300 border border-slate-200 cursor-not-allowed px-3.5 py-1.5 rounded-xl text-xs font-bold"' : 'class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm"'}>
+                        <i class="fa-solid fa-chevron-left mr-1"></i> Trước
+                    </button>
+                    <button onclick="loadProxies(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled class="bg-slate-100 text-slate-300 border border-slate-200 cursor-not-allowed px-3.5 py-1.5 rounded-xl text-xs font-bold"' : 'class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm"'}>
+                        Sau <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function copyToClipboard(text, buttonElement) {
+            navigator.clipboard.writeText(text);
+            const originalHTML = buttonElement.innerHTML;
+            buttonElement.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Đã copy`;
+            buttonElement.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            buttonElement.classList.add('bg-emerald-600');
+            setTimeout(() => {
+                buttonElement.innerHTML = originalHTML;
+                buttonElement.classList.remove('bg-emerald-600');
+                buttonElement.classList.add('bg-blue-600', 'hover:bg-blue-700');
+            }, 1500);
+        }
+
+        function resetFilters() {
+            selectCountry('', 'Tất cả quốc gia (All)', '');
+            document.getElementById('protocol-filter').value = '';
+            document.getElementById('anonymity-filter').value = '';
+            document.getElementById('sort-filter').value = 'latency';
+            document.getElementById('pagesize-filter').value = '50';
+            document.getElementById('search-input').value = '';
+            uptimeSortDirection = 0;
+            document.getElementById('uptime-sort-icon').className = "fa-solid fa-sort ml-1";
+            triggerApiLoad();
+        }
+
+        triggerApiLoad();
+    </script>
+</body>
+</html>
